@@ -1,3 +1,6 @@
+# Claude Code
+.claude/
+
 # Rust
 target/
 Cargo.lock
