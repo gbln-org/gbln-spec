@@ -8,55 +8,6 @@
 
 ---
 
-## 🗂️ Project Components
-
-This repository serves as the central hub for the GBLN ecosystem. All implementation repositories are included as Git submodules.
-
-### Core Implementation
-- **[📋 Specification](docs/)** - The GBLN format specification (this repo)
-- **[🦀 Rust Core](https://github.com/gbln-org/gbln-rust)** - Reference implementation and parser library
-- **[🔧 C FFI](https://github.com/gbln-org/gbln-c)** - C interface layer for language bindings
-- **[⚙️ CLI Tools](https://github.com/gbln-org/gbln-tools)** - Command-line tools (fmt, validate, convert)
-
-### Language Bindings
-- **[🐍 Python](https://github.com/gbln-org/gbln-python)** - Python bindings
-- **[📦 JavaScript/TypeScript](https://github.com/gbln-org/gbln-javascript)** - JS/TS bindings (WASM)
-- **[🍎 Swift](https://github.com/gbln-org/gbln-swift)** - Swift bindings for iOS/macOS
-- **[🤖 Kotlin](https://github.com/gbln-org/gbln-kotlin)** - Kotlin bindings for Android/JVM
-- **[🐹 Go](https://github.com/gbln-org/gbln-go)** - Go bindings
-- **[☕ Java](https://github.com/gbln-org/gbln-java)** - Java bindings
-- **[💎 Ruby](https://github.com/gbln-org/gbln-ruby)** - Ruby bindings
-- **[🐘 PHP](https://github.com/gbln-org/gbln-php)** - PHP bindings
-- **[🐪 Perl](https://github.com/gbln-org/gbln-perl)** - Perl bindings
-- **[🔮 Tcl](https://github.com/gbln-org/gbln-tcl)** - Tcl bindings
-- **[#️⃣ C#](https://github.com/gbln-org/gbln-csharp)** - C# bindings for .NET
-- **[➕ C++](https://github.com/gbln-org/gbln-cpp)** - C++ bindings
-
-### Editor Support
-- **[💻 VSCode](https://github.com/gbln-org/gbln-vscode)** - Visual Studio Code extension
-- **[📝 Vim](https://github.com/gbln-org/gbln-vim)** - Vim/Neovim plugin
-- **[🧠 JetBrains](https://github.com/gbln-org/gbln-jetbrains)** - IntelliJ, PyCharm, etc.
-- **[🎨 Sublime](https://github.com/gbln-org/gbln-sublime)** - Sublime Text plugin
-- **[⚡ Zed](https://github.com/gbln-org/gbln-zed)** - Zed editor extension
-
-### Website
-- **[🌐 gbln.dev](https://github.com/gbln-org/gbln-website)** - Official website and interactive playground
-
-### Getting Started
-
-```bash
-# Clone only the specification
-git clone https://github.com/gbln-org/gbln.git
-
-# Clone with all implementation repositories
-git clone --recursive https://github.com/gbln-org/gbln.git
-
-# Clone a specific implementation
-git clone https://github.com/gbln-org/gbln-rust.git
-```
-
----
-
 ## 🎯 The Problem
 
 Text-based data formats weren't designed for the AI era:

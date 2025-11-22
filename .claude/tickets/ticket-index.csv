@@ -1,0 +1,14 @@
+id,repo,status,priority,title,created,updated
+001,gbln,completed,high,Initial specification and documentation,2025-01-22,2025-01-22
+002,gbln,completed,high,100 employee benchmark with all formats,2025-01-22,2025-01-22
+003,gbln,completed,medium,Clarify GBLN naming convention (compact is default),2025-01-22,2025-01-22
+004,gbln,completed,high,Setup repository structure with submodules,2025-01-22,2025-01-22
+005,gbln-rust,open,critical,Rust reference implementation - core parser,2025-01-22,2025-01-22
+006,gbln-c,open,critical,C FFI layer for language bindings,2025-01-22,2025-01-22
+007,gbln-tools,open,high,CLI formatter (gbln fmt),2025-01-22,2025-01-22
+008,gbln-tools,open,high,CLI validator (gbln validate),2025-01-22,2025-01-22
+009,gbln-tools,open,medium,CLI converter (gbln convert json/yaml),2025-01-22,2025-01-22
+010,gbln-python,open,high,Python bindings via ctypes,2025-01-22,2025-01-22
+011,gbln-javascript,open,high,JavaScript/TypeScript bindings via WASM,2025-01-22,2025-01-22
+012,gbln-website,open,medium,Landing page and interactive playground,2025-01-22,2025-01-22
+013,gbln-vscode,open,medium,VSCode extension with syntax highlighting,2025-01-22,2025-01-22
