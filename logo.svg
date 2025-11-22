@@ -1,0 +1,9 @@
+<svg width="200" height="80" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background with rounded corners -->
+  <rect x="10" y="10" width="180" height="60" rx="8" ry="8"
+        fill="#2d5016" stroke="#4a7c2c" stroke-width="3"/>
+
+  <!-- GBLN text -->
+  <text x="35" y="52" font-family="monospace" font-size="32" font-weight="bold"
+        fill="#a8d88f">GBLN :|</text>
+</svg>
