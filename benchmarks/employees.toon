@@ -1,0 +1,124 @@
+employees:
+  - id: 1001
+    firstName: Alice
+    lastName: Johnson
+    email: alice.johnson@company.com
+    phone: +49-30-12345678
+    dateOfBirth: 1985-03-15
+    hireDate: 2015-06-01
+    position: Senior Software Engineer
+    department: Engineering
+    salary: 75000.00
+    employmentType: full-time
+    workHoursPerWeek: 40
+    vacationDaysPerYear: 30
+    isActive: true
+    address:
+      street: Hauptstraße 123
+      city: Berlin
+      postalCode: 10115
+      country: Germany
+    skills[4]: Java,Python,Docker,Kubernetes
+    certifications:
+      - name: AWS Certified Solutions Architect
+        issueDate: 2020-05-10
+        expiryDate: 2023-05-10
+      - name: Certified Kubernetes Administrator
+        issueDate: 2021-08-15
+        expiryDate: 2024-08-15
+  - id: 1002
+    firstName: Bob
+    lastName: Schmidt
+    email: bob.schmidt@company.com
+    phone: +49-89-98765432
+    dateOfBirth: 1990-07-22
+    hireDate: 2018-09-15
+    position: Product Manager
+    department: Product
+    salary: 68000.00
+    employmentType: full-time
+    workHoursPerWeek: 40
+    vacationDaysPerYear: 28
+    isActive: true
+    address:
+      street: Marienplatz 5
+      city: München
+      postalCode: 80331
+      country: Germany
+    skills[4]: Product Strategy,Agile,Jira,Analytics
+    certifications:
+      - name: Certified Scrum Product Owner
+        issueDate: 2019-03-20
+        expiryDate: 2025-03-20
+  - id: 1003
+    firstName: Carol
+    lastName: Müller
+    email: carol.mueller@company.com
+    phone: +49-40-55512345
+    dateOfBirth: 1988-11-30
+    hireDate: 2016-02-10
+    position: UX Designer
+    department: Design
+    salary: 62000.00
+    employmentType: full-time
+    workHoursPerWeek: 40
+    vacationDaysPerYear: 30
+    isActive: true
+    address:
+      street: Reeperbahn 99
+      city: Hamburg
+      postalCode: 20359
+      country: Germany
+    skills[4]: Figma,Adobe XD,User Research,Prototyping
+    certifications: []
+  - id: 1004
+    firstName: David
+    lastName: Weber
+    email: david.weber@company.com
+    phone: +49-711-22233344
+    dateOfBirth: 1992-05-08
+    hireDate: 2020-01-20
+    position: Junior Developer
+    department: Engineering
+    salary: 48000.00
+    employmentType: full-time
+    workHoursPerWeek: 40
+    vacationDaysPerYear: 26
+    isActive: true
+    address:
+      street: Königstraße 28
+      city: Stuttgart
+      postalCode: 70173
+      country: Germany
+    skills[4]: JavaScript,React,Node.js,Git
+    certifications:
+      - name: JavaScript Developer Certificate
+        issueDate: 2021-11-05
+        expiryDate: 2024-11-05
+  - id: 1005
+    firstName: Emma
+    lastName: Fischer
+    email: emma.fischer@company.com
+    phone: +49-221-66677788
+    dateOfBirth: 1995-09-14
+    hireDate: 2022-03-01
+    position: Marketing Specialist
+    department: Marketing
+    salary: 52000.00
+    employmentType: part-time
+    workHoursPerWeek: 30
+    vacationDaysPerYear: 24
+    isActive: false
+    address:
+      street: Domkloster 4
+      city: Köln
+      postalCode: 50667
+      country: Germany
+    skills[4]: SEO,Content Marketing,Google Analytics,Social Media
+    certifications:
+      - name: Google Analytics Certification
+        issueDate: 2022-06-12
+        expiryDate: 2024-06-12
+      - name: HubSpot Content Marketing
+        issueDate: 2022-09-01
+        expiryDate: 2025-09-01
