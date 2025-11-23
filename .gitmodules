@@ -1,0 +1,112 @@
+# GBLN Ecosystem - Git Submodules
+# All implementation repositories as submodules
+
+# Core Implementation
+[submodule "core/rust"]
+	path = core/rust
+	url = https://github.com/gbln-org/gbln-rust.git
+	branch = main
+
+[submodule "core/ffi"]
+	path = core/ffi
+	url = https://github.com/gbln-org/gbln-ffi.git
+	branch = main
+
+# Tools
+[submodule "tools"]
+	path = tools
+	url = https://github.com/gbln-org/gbln-tools.git
+	branch = main
+
+# Language Bindings
+[submodule "bindings/python"]
+	path = bindings/python
+	url = https://github.com/gbln-org/gbln-python.git
+	branch = main
+
+[submodule "bindings/javascript"]
+	path = bindings/javascript
+	url = https://github.com/gbln-org/gbln-javascript.git
+	branch = main
+
+[submodule "bindings/swift"]
+	path = bindings/swift
+	url = https://github.com/gbln-org/gbln-swift.git
+	branch = main
+
+[submodule "bindings/kotlin"]
+	path = bindings/kotlin
+	url = https://github.com/gbln-org/gbln-kotlin.git
+	branch = main
+
+[submodule "bindings/go"]
+	path = bindings/go
+	url = https://github.com/gbln-org/gbln-go.git
+	branch = main
+
+[submodule "bindings/java"]
+	path = bindings/java
+	url = https://github.com/gbln-org/gbln-java.git
+	branch = main
+
+[submodule "bindings/csharp"]
+	path = bindings/csharp
+	url = https://github.com/gbln-org/gbln-csharp.git
+	branch = main
+
+[submodule "bindings/cpp"]
+	path = bindings/cpp
+	url = https://github.com/gbln-org/gbln-cpp.git
+	branch = main
+
+[submodule "bindings/ruby"]
+	path = bindings/ruby
+	url = https://github.com/gbln-org/gbln-ruby.git
+	branch = main
+
+[submodule "bindings/php"]
+	path = bindings/php
+	url = https://github.com/gbln-org/gbln-php.git
+	branch = main
+
+[submodule "bindings/perl"]
+	path = bindings/perl
+	url = https://github.com/gbln-org/gbln-perl.git
+	branch = main
+
+[submodule "bindings/tcl"]
+	path = bindings/tcl
+	url = https://github.com/gbln-org/gbln-tcl.git
+	branch = main
+
+# Editor Support
+[submodule "editors/vscode"]
+	path = editors/vscode
+	url = https://github.com/gbln-org/gbln-vscode.git
+	branch = main
+
+[submodule "editors/vim"]
+	path = editors/vim
+	url = https://github.com/gbln-org/gbln-vim.git
+	branch = main
+
+[submodule "editors/jetbrains"]
+	path = editors/jetbrains
+	url = https://github.com/gbln-org/gbln-jetbrains.git
+	branch = main
+
+[submodule "editors/sublime"]
+	path = editors/sublime
+	url = https://github.com/gbln-org/gbln-sublime.git
+	branch = main
+
+[submodule "editors/zed"]
+	path = editors/zed
+	url = https://github.com/gbln-org/gbln-zed.git
+	branch = main
+
+# Website
+[submodule "website"]
+	path = website
+	url = https://github.com/gbln-org/gbln-website.git
+	branch = main
