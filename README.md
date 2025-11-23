@@ -21,7 +21,7 @@ This repository serves as the central hub for the GBLN ecosystem. All implementa
 ### Core Implementation
 - **[📋 Specification](docs/)** - The GBLN format specification (this repo)
 - **[🦀 Rust Core](https://github.com/gbln-org/gbln-rust)** - Reference implementation and parser library
-- **[🔧 C FFI](https://github.com/gbln-org/gbln-c)** - C interface layer for language bindings
+- **[🔧 C FFI](https://github.com/gbln-org/gbln-ffi)** - C interface layer for language bindings
 - **[⚙️ CLI Tools](https://github.com/gbln-org/gbln-tools)** - Command-line tools (fmt, validate, convert)
 
 ### Language Bindings
@@ -35,8 +35,8 @@ This repository serves as the central hub for the GBLN ecosystem. All implementa
 - **[🐘 PHP](https://github.com/gbln-org/gbln-php)** - PHP bindings
 - **[🐪 Perl](https://github.com/gbln-org/gbln-perl)** - Perl bindings
 - **[🔮 Tcl](https://github.com/gbln-org/gbln-tcl)** - Tcl bindings
-- **[#️⃣ C#](https://github.com/gbln-org/gbln-csharp)** - C# bindings for .NET
-- **[➕ C++](https://github.com/gbln-org/gbln-cpp)** - C++ bindings
+- **[#️⃣ C#](https://github.com/gbln-org/gbln-ffisharp)** - C# bindings for .NET
+- **[➕ C++](https://github.com/gbln-org/gbln-ffipp)** - C++ bindings
 
 ### Editor Support
 - **[💻 VSCode](https://github.com/gbln-org/gbln-vscode)** - Visual Studio Code extension
