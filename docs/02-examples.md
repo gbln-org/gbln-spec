@@ -16,9 +16,10 @@
 5. [IoT Device Data](#iot-device-data)
 6. [Mobile App Data](#mobile-app-data)
 7. [Complex Nested Structures](#complex-nested-structures)
-8. [Edge Cases](#edge-cases)
-9. [Best Practises](#best-practises)
-10. [Anti-Patterns](#anti-patterns)
+8. [I/O Format Workflow](#io-format-workflow)
+9. [Edge Cases](#edge-cases)
+10. [Best Practises](#best-practises)
+11. [Anti-Patterns](#anti-patterns)
 
 ---
 
@@ -798,6 +799,288 @@ company{
         }
     ]
 }
+```
+
+---
+
+## I/O Format Workflow
+
+### Overview
+
+GBLN uses a dual-file system: human-editable source files (`.gbln`) and optimised I/O files (`.io.gbln.xz`).
+
+### Example 1: Configuration File Workflow
+
+**Step 1: Create Human-Editable Source**
+
+`config.gbln`:
+```gbln
+:| Application Configuration
+:| Updated: 2025-01-24
+app{
+  name<s32>(My Application)
+  version<s16>(1.2.3)
+  
+  server{
+    host<s64>(api.example.com)
+    port<u16>(8080)
+    workers<u8>(4)
+    timeout_ms<u32>(30000)
+  }
+  
+  database{
+    host<s64>(db.example.com)
+    port<u16>(5432)
+    name<s32>(production_db)
+  }
+}
+```
+
+**Step 2: Generate I/O Format**
+
+```bash
+# Generate optimised I/O format (MINI GBLN + XZ compressed)
+gbln write config.gbln
+
+# Output: config.io.gbln.xz created
+# File size: config.gbln (287 bytes) → config.io.gbln.xz (68 bytes, -76%)
+```
+
+**Step 3: Application Uses I/O Format**
+
+```rust
+// Application code
+use gbln::read_io;
+
+let value = read_io("config.io.gbln.xz")?;
+// Automatically decompresses and parses
+
+let port = value["app"]["server"]["port"].as_u16().unwrap();
+println!("Server port: {}", port);  // 8080
+```
+
+**Step 4: Update Source from I/O File (if modified at runtime)**
+
+```bash
+# Application modified config.io.gbln.xz at runtime
+# Update human-readable source to see changes
+gbln read config.gbln
+
+# Output: config.gbln updated from config.io.gbln.xz
+```
+
+---
+
+### Example 2: API Response Workflow
+
+**Server-Side: Generate I/O Format**
+
+```rust
+// Server code
+use gbln::{Value, write_io, GblnConfig};
+use std::path::Path;
+
+// Create response data
+let mut user = HashMap::new();
+user.insert("id", Value::U32(12345));
+user.insert("name", Value::Str("Alice".into()));
+user.insert("email", Value::Str("alice@example.com".into()));
+
+let response = Value::Object(user);
+
+// Write to I/O format (MINI + XZ)
+let config = GblnConfig::default();  // mini_mode=true, compress=true
+write_io(&response, Path::new("response.io.gbln.xz"), &config)?;
+
+// Send compressed response to client
+send_file("response.io.gbln.xz");  // 95% less bandwidth than JSON
+```
+
+**Client-Side: Parse I/O Format**
+
+```python
+# Client code (Python)
+import gbln
+
+# Receive and parse I/O format
+response = gbln.read_io("response.io.gbln.xz")
+# Automatically decompresses and parses
+
+user_id = response["id"]  # 12345
+user_name = response["name"]  # "Alice"
+```
+
+---
+
+### Example 3: LLM Context Optimization
+
+**Prepare Data for LLM Context**
+
+```bash
+# Start with human-readable configs
+ls configs/
+# → server.gbln, database.gbln, cache.gbln
+
+# Generate I/O formats
+for file in configs/*.gbln; do
+  gbln write "$file"
+done
+
+# Result: server.io.gbln.xz, database.io.gbln.xz, cache.io.gbln.xz
+# Size: 1,200 bytes total (vs 4,800 bytes for .gbln files)
+```
+
+**Use in LLM Prompt**
+
+```python
+import gbln
+import openai
+
+# Load I/O formats (decompressed for LLM)
+server_cfg = gbln.read_io("configs/server.io.gbln.xz")
+db_cfg = gbln.read_io("configs/database.io.gbln.xz")
+cache_cfg = gbln.read_io("configs/cache.io.gbln.xz")
+
+# Convert to MINI GBLN strings for LLM context
+server_str = gbln.to_string(server_cfg, mini=True)
+db_str = gbln.to_string(db_cfg, mini=True)
+cache_str = gbln.to_string(cache_cfg, mini=True)
+
+# Create prompt with minimal token usage
+prompt = f"""
+Current configurations:
+Server: {server_str}
+Database: {db_str}
+Cache: {cache_str}
+
+Suggest optimizations for high-traffic scenario...
+"""
+
+# 84% fewer tokens than equivalent JSON
+response = openai.ChatCompletion.create(
+    model="gpt-4",
+    messages=[{"role": "user", "content": prompt}]
+)
+```
+
+---
+
+### Example 4: Development to Production Pipeline
+
+**Development Environment**
+
+```bash
+# Developers work with human-readable files
+vim configs/production.gbln
+
+# Validate and auto-fix formatting before commit
+gbln validate --fix configs/production.gbln
+
+# Commit to Git (only .gbln files)
+git add configs/production.gbln
+git commit -m "Update production config"
+```
+
+**.gitignore**:
+```gitignore
+# GBLN I/O Files (generated, not committed)
+*.io.gbln
+*.io.gbln.xz
+```
+
+**CI/CD Pipeline**
+
+```bash
+# Build script (runs in CI)
+#!/bin/bash
+
+echo "Generating I/O formats..."
+for file in configs/*.gbln; do
+  gbln write "$file" -v
+done
+
+echo "Packaging for deployment..."
+tar czf app-configs.tar.gz configs/*.io.gbln.xz
+
+echo "File sizes:"
+du -h configs/*.gbln
+du -h configs/*.io.gbln.xz
+```
+
+**Production Deployment**
+
+```bash
+# Deploy only I/O formats (not source .gbln files)
+scp app-configs.tar.gz prod-server:/var/lib/app/
+ssh prod-server "cd /var/lib/app && tar xzf app-configs.tar.gz"
+
+# Application reads I/O formats
+systemctl restart myapp
+# App loads config.io.gbln.xz (fast, efficient)
+```
+
+---
+
+### Example 5: Runtime Config Updates
+
+**Application Modifies Config**
+
+```rust
+use gbln::{parse_file, write_io, GblnConfig};
+
+// Load current config
+let mut value = parse_file("config.gbln")?;
+
+// Modify at runtime
+value["app"]["server"]["workers"] = Value::U8(8);  // Increase workers
+
+// Write updated I/O format
+let config = GblnConfig::default();
+write_io(&value, Path::new("config.io.gbln.xz"), &config)?;
+
+println!("Config updated at runtime");
+```
+
+**Sync Back to Source**
+
+```bash
+# Later: sync runtime changes back to source for documentation
+gbln read config.gbln
+
+# config.gbln now reflects runtime changes
+git diff config.gbln
+# Shows: workers changed from 4 to 8
+```
+
+---
+
+### CLI Commands Reference
+
+```bash
+# Generate I/O format (MINI + XZ)
+gbln write config.gbln
+# → config.io.gbln.xz
+
+# Generate I/O format without compression
+gbln write --no-compress config.gbln
+# → config.io.gbln
+
+# Generate I/O format with pretty format (development mode)
+gbln write --no-mini config.gbln
+# → config.io.gbln.xz (pretty-printed, but still XZ compressed)
+
+# Update source from I/O format
+gbln read config.gbln
+# Reads config.io.gbln.xz, writes config.gbln
+
+# Verbose output (see size savings)
+gbln write config.gbln -v
+# Output:
+#   Reading: config.gbln (287 bytes)
+#   Parsing: OK (12 values)
+#   MINI GBLN: 152 bytes (-47%)
+#   XZ compress (level 6): 68 bytes (-76%)
+#   Written: config.io.gbln.xz
 ```
 
 ---

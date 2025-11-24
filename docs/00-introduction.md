@@ -359,40 +359,56 @@ mixed[
 ]
 ```
 
-### 8. LLM Token Optimisation
+### 8. LLM Token Optimisation via I/O Format
 
-GBLN supports **lossless compression** for LLM contexts:
+GBLN uses a **dual-file system** for optimal token efficiency:
 
-**Development (human-readable):**
+**Human-Editable Source (`.gbln`):**
 ```gbln
 :| Configuration
 server{
-    host<s64>(api.example.com)
-    port<u16>(8080)
-    workers<u8>(4)
+  host<s64>(api.example.com)
+  port<u16>(8080)
+  workers<u8>(4)
 }
 ```
 
-**Production/LLM (compressed):**
+**I/O Format (`.io.gbln.xz`):**
 ```gbln
 server{host<s64>(api.example.com)port<u16>(8080)workers<u8>(4)}
 ```
+*(Then XZ compressed to binary)*
 
 **Key Points:**
-- Whitespace outside `()` is optional
-- Comments can be stripped
-- **40-85% fewer tokens** than JSON
-- Fully reversible with `gbln fmt`
+- `.gbln`: Human-readable, comments, whitespace (Git-tracked)
+- `.io.gbln.xz`: MINI GBLN + XZ compressed (NOT Git-tracked)
+- Generated via `gbln write config.gbln`
+- **40-85% fewer tokens** than JSON when decompressed
+- **73% smaller files** with XZ compression
+- Fully reversible with `gbln read`
 
 **Token Savings (1000 records):**
 - JSON: 52,000 tokens
-- **GBLN (minified): 8,300 tokens** (84% reduction)
+- **GBLN I/O Format: 8,300 tokens** (84% reduction)
 
 **Perfect for:**
-- LLM prompt contexts
+- LLM prompt contexts (decompress `.io.gbln.xz` for LLM)
 - RAG system data
 - Fine-tuning datasets
 - AI code generation
+- API transmission (95% less bandwidth)
+
+**Workflow:**
+```bash
+# 1. Edit human-readable
+vim config.gbln
+
+# 2. Generate I/O format
+gbln write config.gbln  # → config.io.gbln.xz
+
+# 3. App uses I/O format
+myapp --config config.io.gbln.xz
+```
 
 See `docs/04-llm-optimisation.md` for complete details.
 
@@ -429,12 +445,12 @@ See `docs/04-llm-optimisation.md` for complete details.
 
 ### 4. Human-Friendly (When Needed)
 
-> "Compress for AI, format for humans."
+> "I/O format for AI, source format for humans."
 
-- Development mode: readable with comments
-- Production mode: compressed for tokens
-- Lossless transformation between modes
-- Clear, meaningful diffs in Git
+- Source files (`.gbln`): readable with comments, Git-tracked
+- I/O format (`.io.gbln.xz`): MINI GBLN + XZ compressed, not tracked
+- Lossless transformation via `gbln write` / `gbln read`
+- Clear, meaningful diffs in Git (`.gbln` only)
 
 ### 5. Memory-Conscious
 
@@ -621,7 +637,9 @@ data[
 - YAML: 142 KB
 - TOML: 165 KB
 - Protocol Buffers: 42 KB
-- **GBLN: 30 KB** ⭐ (25 KB compressed)
+- **GBLN (`.gbln`): 30 KB** ⭐
+- **GBLN (`.io.gbln`): 25 KB** (MINI GBLN)
+- **GBLN (`.io.gbln.xz`): 8 KB** (MINI + XZ compressed) ⭐⭐
 
 **Parse Speed (1000 records):**
 - JSON: 45 ms
@@ -668,9 +686,9 @@ data[
    - Perfect for IoT, mobile, embedded
 
 5. **Human-Friendly (When Needed)**
-   - Development mode: readable with comments
-   - Production mode: compressed for efficiency
-   - Lossless transformation between modes
+   - Source files (`.gbln`): readable with comments
+   - I/O format (`.io.gbln.xz`): optimised for efficiency
+   - Lossless transformation via `gbln write`/`gbln read`
    - Clear error messages guide fixes
 
 ### Secondary Goals

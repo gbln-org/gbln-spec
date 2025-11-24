@@ -77,19 +77,35 @@ Text-based data formats weren't designed for the AI era:
 
 ## ⚡ The Solution
 
-```gbln
-:| GBLN (Production Format - No Whitespace)
-server{host<s64>(api.example.com)port<u16>(8080)workers<u8>(4)}
+**GBLN uses a dual-file system:**
 
-:| Development Mode (Pretty-Printed for Humans)
+**Source File (`.gbln`)** - Human-Editable:
+```gbln
+:| config.gbln - For Developers & Git
 server{
-    host<s64>(api.example.com)
-    port<u16>(8080)
-    workers<u8>(4)
+  host<s64>(api.example.com)
+  port<u16>(8080)
+  workers<u8>(4)
 }
 ```
 
-**GBLN is the compact format. Whitespace is optional and only for development.**
+**I/O Format (`.io.gbln.xz`)** - Optimised:
+```gbln
+server{host<s64>(api.example.com)port<u16>(8080)workers<u8>(4)}
+```
+*(Then XZ compressed to binary)*
+
+**Workflow:**
+```bash
+# 1. Edit human-readable
+vim config.gbln
+
+# 2. Generate I/O format
+gbln write config.gbln  # → config.io.gbln.xz (73% smaller)
+
+# 3. App uses I/O format
+myapp --config config.io.gbln.xz
+```
 
 ---
 
@@ -131,29 +147,36 @@ server{
 
 ### 100 Employees (Nested Data, Production-Ready)
 
-**Production Formats** (Wire/Cache/LLM):
+**I/O Formats** (Wire/Storage/LLM):
 
-| Format | Bytes | vs JSON | Type-Safe | Memory-Bounded |
-|--------|-------|---------|-----------|----------------|
-| **GBLN** | **49,276** ⭐ | **0.4% smaller** ⭐ | ✅ ⭐ | ✅ ⭐ |
+| Format | Bytes | vs JSON Minified | Type-Safe | Memory-Bounded |
+|--------|-------|------------------|-----------|----------------|
+| **GBLN I/O (`.io.gbln.xz`)** | **~16,500** ⭐⭐⭐ | **67% smaller** | ✅ ⭐ | ✅ ⭐ |
+| **GBLN MINI (`.io.gbln`)** | **49,276** ⭐⭐ | **0.4% smaller** | ✅ ⭐ | ✅ ⭐ |
 | JSON (minified) | 49,466 | baseline | ❌ | ❌ |
 | TOON | 53,601 | 8.4% larger | ❌ | ❌ |
 | YAML | 57,701 | 16.6% larger | ❌ | ❌ |
 
-**Development Formats** (Pretty-Printed for Humans):
+**Source Formats** (Development, Git-Tracked):
 
-| Format | Bytes | vs JSON | Type-Safe | Memory-Bounded |
-|--------|-------|---------|-----------|----------------|
+| Format | Bytes | vs JSON Pretty | Type-Safe | Memory-Bounded |
+|--------|-------|----------------|-----------|----------------|
 | TOON | 53,601 | -32% | ❌ | ❌ |
 | YAML | 57,701 | -27% | ❌ | ❌ |
-| **GBLN (formatted)** | **66,273** | **-17%** | ✅ ⭐ | ✅ ⭐ |
+| **GBLN (`.gbln`)** | **66,273** | **-17%** | ✅ ⭐ | ✅ ⭐ |
 | JSON (indent=2) | 79,394 | baseline | ❌ | ❌ |
 
-**The Real Win**: GBLN is **0.4% smaller** than JSON minified (190 bytes) **AND includes type safety + memory bounds for free**.
+**The Real Win**: 
+- GBLN MINI is **0.4% smaller** than JSON minified (~190 bytes) **AND includes type safety + memory bounds**
+- GBLN I/O is **67% smaller** than JSON minified with XZ compression
+- All GBLN variants parse to same validated data structure
 
 ### Key Insights
 
-**File Size**: GBLN is 0.4% smaller than JSON minified (~190 bytes difference)
+**File Sizes** (100 employee records):
+- `.gbln` (source): 66,273 bytes (17% smaller than JSON pretty, Git-tracked)
+- `.io.gbln` (MINI): 49,276 bytes (0.4% smaller than JSON minified)
+- `.io.gbln.xz` (I/O): ~16,500 bytes (67% smaller than JSON minified)
 
 **But GBLN adds** (at zero size cost):
 - ✅ **Parse-time type validation** - Catch errors before runtime
@@ -272,7 +295,7 @@ sensor{device_id<s16>(SENS-001)temperature<f32>(22.5)humidity<u8>(65)battery<u8>
 
 ---
 
-**Key Takeaway**: GBLN is always compact. Formatting with indentation is optional and only for developers editing files. Tools like `gbln fmt` can convert between formats.
+**Key Takeaway**: GBLN is always compact. Formatting with indentation is optional and only for developers editing files. The `gbln write` tool generates optimized I/O files, while `gbln read` uses smart lookup to find the best available format.
 
 ---
 
