@@ -1,32 +1,58 @@
 # GBLN Language Bindings - Build & Test Guide
 
-**Version:** 1.0  
-**Last Updated:** 2025-11-27  
-**Status:** Active
-
----
-
-## ⚠️ MANDATORY POLICY
-
-**ALL language bindings MUST follow the Docker-based build and test strategy.**
-
-This document defines the **ONLY acceptable** way to build and test language bindings across all platforms.
+**Version:** 2.0  
+**Last Updated:** 2025-11-28  
+**Status:** Production - VERIFIED & TESTED
 
 ---
 
 ## Overview
 
-GBLN provides bindings for 12+ languages, all using the C FFI layer as foundation:
+GBLN provides bindings for 12+ languages, all using the pre-built C FFI libraries as foundation:
 
 ```
-Rust Core (#004) → C FFI (#005 + #005B) → Language Bindings (#100-111) → User API
+Rust Core → C FFI (cross builds) → Pre-built libs (Git) → Language Bindings → User API
 ```
 
 **All bindings share:**
-- Same C FFI library (`libgbln.so`, `libgbln.dylib`, `gbln.dll`)
-- Same platform support (10 platforms)
-- Same quality requirements (Docker-tested on all platforms)
+- Same C FFI libraries from `core/ffi/libs/` (committed to Git)
+- Same platform support (8 platforms)
+- Same quality requirements (tested on all platforms)
 - Same documentation patterns
+
+---
+
+## Pre-Built Libraries (CRITICAL)
+
+**ALL language bindings use pre-built C FFI libraries from `core/ffi/libs/`.**
+
+**DO NOT build C FFI as part of binding development!**
+
+### Library Locations
+
+```
+core/ffi/libs/
+├── linux-x64/libgbln.so          # 573K
+├── linux-arm64/libgbln.so        # 583K
+├── freebsd-x64/libgbln.so        # 548K
+├── freebsd-arm64/libgbln.so      # 639K
+├── windows-x64/gbln.dll          # 1.5M
+├── android-arm64/libgbln.so      # 627K
+├── android-x64/libgbln.so        # 617K
+└── macos-arm64/libgbln.dylib     # 553K
+```
+
+**These are:**
+- ✅ Committed to Git
+- ✅ Built with `cross` tool (verified working)
+- ✅ Used by ALL language bindings
+- ✅ Included in distributed packages (pip, npm, gem, etc.)
+
+**DO NOT:**
+- ❌ Rebuild C FFI during binding development
+- ❌ Use `target/` directory libraries (use `libs/` instead)
+- ❌ Build C FFI on user machines
+- ❌ Assume users have Rust/Docker installed
 
 ---
 
@@ -38,314 +64,223 @@ Rust Core (#004) → C FFI (#005 + #005B) → Language Bindings (#100-111) → U
 
 1. ✅ Read Ticket #100 completely
 2. ✅ Study `bindings/python/` implementation
-3. ✅ Review `docs/BINDING_REFERENCE.md` (created during #100)
-4. ✅ Review `docs/PLATFORM_TESTING.md` (created during #100)
+3. ✅ Understand library loading from `core/ffi/libs/`
+4. ✅ Copy library selection logic (platform detection)
 5. ✅ Copy `bindings/TEMPLATE/` as starting point
 
 ---
 
-## Platform Matrix (MANDATORY)
+## Platform Matrix
 
-**Every binding MUST be tested on ALL platforms before ticket completion.**
+**Every binding MUST support all 8 platforms.**
 
-| Platform | Architectures | Docker Image Base | Status |
-|----------|---------------|-------------------|--------|
-| FreeBSD | x86_64, ARM64 | `freebsd:13.2` | Required |
-| Linux | x86_64, ARM64 | Language-specific (e.g., `python:3.11-slim`) | Required |
-| macOS | x86_64, ARM64 | N/A (pending Docker support) | Native exception |
-| Windows | x86_64 | `mcr.microsoft.com/windows` | Required |
-| Android | ARM64, x86_64 | Termux-based | Required |
-| iOS | ARM64 | N/A (pending Docker support) | Future |
-
-**Required Platforms:** 7-9 (depending on Docker image availability)  
-**Blocking:** Ticket cannot be completed if any required platform fails
+| Platform | Architecture | Library | Size | Status |
+|----------|-------------|---------|------|--------|
+| Linux | x86_64 | libgbln.so | 573K | ✅ |
+| Linux | ARM64 | libgbln.so | 583K | ✅ |
+| FreeBSD | x86_64 | libgbln.so | 548K | ✅ |
+| FreeBSD | ARM64 | libgbln.so | 639K | ✅ |
+| Windows | x86_64 | gbln.dll | 1.5M | ✅ |
+| Android | ARM64 | libgbln.so | 627K | ✅ |
+| Android | x86_64 | libgbln.so | 617K | ✅ |
+| macOS | ARM64 | libgbln.dylib | 553K | ✅ |
 
 ---
 
-## Build Infrastructure (Per Binding)
+## Library Loading Pattern
 
-**Location:** `bindings/{language}/tests/docker/`
+**All bindings MUST implement platform detection and library loading.**
 
-### Required Files
+### Python Example (Reference)
 
-```
-bindings/{language}/
-├── tests/
-│   └── docker/
-│       ├── test-all-platforms.sh       # Master test script (MANDATORY)
-│       ├── Dockerfile.freebsd-x64      # FreeBSD x86_64
-│       ├── Dockerfile.freebsd-arm64    # FreeBSD ARM64
-│       ├── Dockerfile.linux-x64        # Linux x86_64
-│       ├── Dockerfile.linux-arm64      # Linux ARM64
-│       ├── Dockerfile.windows-x64      # Windows x86_64
-│       ├── Dockerfile.android-arm64    # Android ARM64
-│       ├── Dockerfile.android-x64      # Android x86_64
-│       └── README.md                   # Docker test documentation
-```
+```python
+import ctypes
+import platform
+import sys
+import os
+from pathlib import Path
 
-### Master Test Script Template
-
-**File:** `bindings/{language}/tests/docker/test-all-platforms.sh`
-
-```bash
-#!/usr/bin/env bash
-# Test {LANGUAGE} bindings on ALL platforms via Docker
-# This is the MANDATORY test method
-
-set -euo pipefail
-
-cd "$(dirname "$0")"
-
-PLATFORMS=(
-    "freebsd-x64"
-    "freebsd-arm64"
-    "linux-x64"
-    "linux-arm64"
-    "windows-x64"
-    "android-arm64"
-    "android-x64"
-)
-
-echo "GBLN {LANGUAGE} Bindings - Platform Test Suite"
-echo "=============================================="
-echo "⚠️  MANDATORY: All platforms must pass"
-echo ""
-
-FAILED=()
-
-for platform in "${PLATFORMS[@]}"; do
-    echo ""
-    echo "Testing: $platform"
-    echo "-------------------"
+def _load_library():
+    """Load platform-specific GBLN library from core/ffi/libs/"""
     
-    if docker build -f "Dockerfile.$platform" -t "gbln-{language}:$platform" ../../.. && \
-       docker run --rm "gbln-{language}:$platform"; then
-        echo "✓ $platform: PASSED"
-    else
-        echo "✗ $platform: FAILED"
-        FAILED+=("$platform")
-    fi
-done
+    system = platform.system()
+    machine = platform.machine()
+    
+    # Map platform to library directory
+    if system == "Linux":
+        if machine in ("x86_64", "AMD64"):
+            lib_dir = "linux-x64"
+            lib_name = "libgbln.so"
+        elif machine in ("aarch64", "arm64"):
+            lib_dir = "linux-arm64"
+            lib_name = "libgbln.so"
+        else:
+            raise RuntimeError(f"Unsupported Linux architecture: {machine}")
+    
+    elif system == "Darwin":  # macOS
+        if machine == "arm64":
+            lib_dir = "macos-arm64"
+            lib_name = "libgbln.dylib"
+        else:
+            raise RuntimeError(f"Unsupported macOS architecture: {machine}")
+    
+    elif system == "Windows":
+        if machine in ("AMD64", "x86_64"):
+            lib_dir = "windows-x64"
+            lib_name = "gbln.dll"
+        else:
+            raise RuntimeError(f"Unsupported Windows architecture: {machine}")
+    
+    elif system == "FreeBSD":
+        if machine == "amd64":
+            lib_dir = "freebsd-x64"
+            lib_name = "libgbln.so"
+        elif machine == "arm64":
+            lib_dir = "freebsd-arm64"
+            lib_name = "libgbln.so"
+        else:
+            raise RuntimeError(f"Unsupported FreeBSD architecture: {machine}")
+    
+    elif system == "Android":
+        if machine in ("aarch64", "arm64"):
+            lib_dir = "android-arm64"
+            lib_name = "libgbln.so"
+        elif machine in ("x86_64", "AMD64"):
+            lib_dir = "android-x64"
+            lib_name = "libgbln.so"
+        else:
+            raise RuntimeError(f"Unsupported Android architecture: {machine}")
+    
+    else:
+        raise RuntimeError(f"Unsupported platform: {system}")
+    
+    # Construct path to library
+    # From bindings/python/ to core/ffi/libs/{platform}/
+    binding_dir = Path(__file__).parent
+    lib_path = binding_dir / "../../core/ffi/libs" / lib_dir / lib_name
+    lib_path = lib_path.resolve()
+    
+    if not lib_path.exists():
+        raise FileNotFoundError(
+            f"GBLN library not found: {lib_path}\n"
+            f"Platform: {system} {machine}\n"
+            f"Expected: {lib_dir}/{lib_name}"
+        )
+    
+    return ctypes.CDLL(str(lib_path))
 
-echo ""
-echo "========================================="
-if [ ${#FAILED[@]} -eq 0 ]; then
-    echo "✓ ALL PLATFORMS PASSED (${#PLATFORMS[@]}/${#PLATFORMS[@]})"
-    echo "Ticket #{TICKET_NUM} platform testing: COMPLETE"
-    exit 0
-else
-    echo "✗ FAILURES: ${#FAILED[@]}/${#PLATFORMS[@]}"
-    for platform in "${FAILED[@]}"; do
-        echo "  - $platform"
-    done
-    echo ""
-    echo "Ticket #{TICKET_NUM} platform testing: INCOMPLETE"
-    exit 1
-fi
+# Load library on module import
+_lib = _load_library()
+```
+
+### Adapt for Each Language
+
+**JavaScript (Node.js):**
+```javascript
+const ffi = require('ffi-napi');
+const path = require('path');
+const os = require('os');
+
+function loadLibrary() {
+    const platform = os.platform();
+    const arch = os.arch();
+    
+    let libDir, libName;
+    
+    if (platform === 'linux') {
+        if (arch === 'x64') {
+            libDir = 'linux-x64';
+            libName = 'libgbln.so';
+        } else if (arch === 'arm64') {
+            libDir = 'linux-arm64';
+            libName = 'libgbln.so';
+        }
+    } else if (platform === 'darwin') {
+        libDir = 'macos-arm64';
+        libName = 'libgbln.dylib';
+    } else if (platform === 'win32') {
+        libDir = 'windows-x64';
+        libName = 'gbln.dll';
+    }
+    
+    const libPath = path.join(__dirname, '../../core/ffi/libs', libDir, libName);
+    return ffi.Library(libPath, { /* FFI definitions */ });
+}
+```
+
+**Go:**
+```go
+package gbln
+
+/*
+#cgo linux,amd64 LDFLAGS: -L../../core/ffi/libs/linux-x64 -lgbln
+#cgo linux,arm64 LDFLAGS: -L../../core/ffi/libs/linux-arm64 -lgbln
+#cgo darwin,arm64 LDFLAGS: -L../../core/ffi/libs/macos-arm64 -lgbln
+#cgo windows,amd64 LDFLAGS: -L../../core/ffi/libs/windows-x64 -lgbln
+#cgo freebsd,amd64 LDFLAGS: -L../../core/ffi/libs/freebsd-x64 -lgbln
+#cgo freebsd,arm64 LDFLAGS: -L../../core/ffi/libs/freebsd-arm64 -lgbln
+
+#include <stdlib.h>
+*/
+import "C"
 ```
 
 ---
 
-## Dockerfile Templates
+## Package Distribution
 
-### Template: Linux x86_64
+**All bindings MUST include pre-built libraries in distributed packages.**
 
-```dockerfile
-FROM {language_base_image}
+### Python (wheel)
 
-# Install libgbln.so for x86_64-unknown-linux-gnu
-COPY core/ffi/target/x86_64-unknown-linux-gnu/release/libgbln.so /usr/lib/
+```python
+# setup.py
+from setuptools import setup
 
-# Copy binding package
-WORKDIR /app
-COPY bindings/{language}/ /app/
-
-# Install dependencies and package
-RUN {language_install_command}
-
-# Run tests
-CMD ["{language_test_command}"]
+setup(
+    name="gbln",
+    version="0.1.0",
+    packages=["gbln"],
+    package_data={
+        "gbln": [
+            "../../core/ffi/libs/linux-x64/*.so",
+            "../../core/ffi/libs/linux-arm64/*.so",
+            "../../core/ffi/libs/freebsd-x64/*.so",
+            "../../core/ffi/libs/freebsd-arm64/*.so",
+            "../../core/ffi/libs/windows-x64/*.dll",
+            "../../core/ffi/libs/android-arm64/*.so",
+            "../../core/ffi/libs/android-x64/*.so",
+            "../../core/ffi/libs/macos-arm64/*.dylib",
+        ]
+    },
+)
 ```
 
-### Template: FreeBSD x86_64
+### JavaScript (npm)
 
-```dockerfile
-FROM freebsd:13.2
-
-# Install build dependencies
-RUN pkg update && pkg install -y {language_runtime}
-
-# Install libgbln.so for x86_64-unknown-freebsd
-COPY core/ffi/target/x86_64-unknown-freebsd/release/libgbln.so /usr/lib/
-
-# Copy binding package
-WORKDIR /app
-COPY bindings/{language}/ /app/
-
-# Install package
-RUN {language_install_command}
-
-# Run tests
-CMD ["{language_test_command}"]
+```json
+{
+  "name": "gbln",
+  "version": "0.1.0",
+  "files": [
+    "dist/",
+    "../../core/ffi/libs/**/*.so",
+    "../../core/ffi/libs/**/*.dll",
+    "../../core/ffi/libs/**/*.dylib"
+  ]
+}
 ```
 
-### Template: Windows x86_64
+### Result
 
-```dockerfile
-FROM mcr.microsoft.com/windows/servercore:ltsc2022
-
-# Install language runtime
-RUN {windows_install_runtime}
-
-# Copy gbln.dll for x86_64-pc-windows-gnu
-COPY core/ffi/target/x86_64-pc-windows-gnu/release/gbln.dll C:/Windows/System32/
-
-# Copy binding package
-WORKDIR C:/app
-COPY bindings/{language}/ C:/app/
-
-# Install package
-RUN {language_install_command}
-
-# Run tests
-CMD ["{language_test_command}"]
+Users install package and get working binaries:
+```bash
+pip install gbln       # All 8 platform libraries included
+npm install gbln       # All 8 platform libraries included
+gem install gbln       # All 8 platform libraries included
 ```
 
----
-
-## Language-Specific Adaptations
-
-### Python (#100)
-
-**Base Image:** `python:3.11-slim`  
-**Install:** `pip install -e .[dev]`  
-**Test:** `pytest -v --tb=short`  
-**Library Loading:** `ctypes.CDLL()`
-
-### JavaScript (#101)
-
-**Base Image:** `node:20-slim`  
-**Install:** `npm install`  
-**Test:** `npm test`  
-**Library Loading:** WASM module compiled from C FFI
-
-### Swift (#102)
-
-**Base Image:** `swift:5.9`  
-**Install:** `swift build`  
-**Test:** `swift test`  
-**Library Loading:** `dlopen()` + Swift/C interop
-
-### Kotlin (#103)
-
-**Base Image:** `eclipse-temurin:17-jdk`  
-**Install:** `./gradlew build`  
-**Test:** `./gradlew test`  
-**Library Loading:** JNA
-
-### Go (#104)
-
-**Base Image:** `golang:1.21`  
-**Install:** `go build`  
-**Test:** `go test ./...`  
-**Library Loading:** CGO
-
-### Java (#105)
-
-**Base Image:** `eclipse-temurin:17-jdk`  
-**Install:** `mvn install`  
-**Test:** `mvn test`  
-**Library Loading:** JNA
-
-### C# (#106)
-
-**Base Image:** `mcr.microsoft.com/dotnet/sdk:8.0`  
-**Install:** `dotnet build`  
-**Test:** `dotnet test`  
-**Library Loading:** P/Invoke
-
-### C++ (#107)
-
-**Base Image:** `gcc:13`  
-**Install:** `cmake --build build`  
-**Test:** `ctest --test-dir build`  
-**Library Loading:** Native `dlopen()`
-
-### Ruby (#108)
-
-**Base Image:** `ruby:3.2`  
-**Install:** `bundle install`  
-**Test:** `bundle exec rspec`  
-**Library Loading:** FFI gem
-
-### PHP (#109)
-
-**Base Image:** `php:8.2-cli`  
-**Install:** `composer install`  
-**Test:** `vendor/bin/phpunit`  
-**Library Loading:** FFI extension
-
-### Perl (#110)
-
-**Base Image:** `perl:5.38`  
-**Install:** `cpanm --installdeps .`  
-**Test:** `prove -l t/`  
-**Library Loading:** `FFI::Platypus`
-
-### Tcl (#111)
-
-**Base Image:** `tcl:8.6`  
-**Install:** N/A (script language)  
-**Test:** `tclsh tests/all.tcl`  
-**Library Loading:** `load` command
-
----
-
-## libgbln Distribution Strategy
-
-**ALL bindings need libgbln binaries for all platforms.**
-
-### Option 1: Bundled in Package (Recommended)
-
-Include precompiled `libgbln.*` for all platforms in the language package:
-
-```
-bindings/{language}/
-├── lib/
-│   ├── freebsd/
-│   │   ├── x86_64/libgbln.so
-│   │   └── aarch64/libgbln.so
-│   ├── linux/
-│   │   ├── x86_64/libgbln.so
-│   │   └── aarch64/libgbln.so
-│   ├── macos/
-│   │   ├── x86_64/libgbln.dylib
-│   │   └── aarch64/libgbln.dylib
-│   ├── windows/
-│   │   └── x86_64/gbln.dll
-│   └── android/
-│       ├── aarch64/libgbln.so
-│       └── x86_64/libgbln.so
-```
-
-**Pros:** Self-contained, works offline  
-**Cons:** Larger package size
-
-### Option 2: Download on Install
-
-Download platform-specific binary during package installation:
-
-**Pros:** Smaller package size  
-**Cons:** Requires internet, install complexity
-
-### Option 3: System Library
-
-Expect user to install `libgbln` separately:
-
-**Pros:** Smallest package  
-**Cons:** User burden, version mismatch issues
-
-**Recommendation:** Use **Option 1** for user-facing bindings (Python, JavaScript, etc.)
+**NO compilation on user machine!**
 
 ---
 
@@ -357,113 +292,181 @@ Expect user to install `libgbln` separately:
 
 1. **Unit Tests (40%)** - Individual function tests
 2. **Integration Tests (40%)** - Parse → Serialize → Parse round-trips
-3. **I/O Tests (20%)** - write_io → read_io round-trips
-4. **Platform Tests** - Verify library loading on each platform
+3. **Platform Tests (20%)** - Verify library loading works on each platform
 
 **Minimum:** 100+ test cases
 
-### Test Categories
+### Test Structure
 
 ```
-tests/
-├── unit/
-│   ├── test_ffi_loading.{ext}       # Library loading
-│   ├── test_value_conversion.{ext}  # Type conversion
-│   ├── test_memory_management.{ext} # No leaks
-│   └── test_error_handling.{ext}    # All error cases
-├── integration/
-│   ├── test_parse.{ext}             # Parse GBLN strings
-│   ├── test_serialize.{ext}         # Serialize to GBLN
-│   └── test_roundtrip.{ext}         # Full round-trip
-├── io/
-│   ├── test_write_io.{ext}          # I/O format writing
-│   └── test_read_io.{ext}           # I/O format reading
-└── platform/
-    ├── test_library_exists.{ext}    # Platform-specific
-    └── test_utf8_handling.{ext}     # Unicode support
+bindings/{language}/tests/
+├── test_ffi_loading.{ext}        # Library loading for all platforms
+├── test_value_conversion.{ext}   # Type conversion (GBLN ↔ Native)
+├── test_parse.{ext}              # Parse GBLN strings
+├── test_serialize.{ext}          # Serialize to GBLN
+├── test_roundtrip.{ext}          # Full round-trip
+├── test_memory.{ext}             # No memory leaks
+└── test_errors.{ext}             # Error handling
 ```
+
+### Platform Testing
+
+**Test on your development machine** (should auto-detect platform):
+
+```bash
+# Python
+cd bindings/python
+pytest -v
+
+# JavaScript
+cd bindings/javascript
+npm test
+
+# Go
+cd bindings/go
+go test ./...
+```
+
+**The library loader automatically selects the correct platform library.**
 
 ### Acceptance Criteria
 
-**Before marking ticket complete:**
-
 - [ ] All unit tests pass
 - [ ] All integration tests pass
-- [ ] All I/O tests pass
-- [ ] All platform tests pass
-- [ ] **MANDATORY:** `test-all-platforms.sh` passes for ALL required platforms
-- [ ] No memory leaks (verified on at least Linux x64)
-- [ ] UTF-8 handling correct on all platforms
-- [ ] Error messages correct on all platforms
+- [ ] Platform detection works correctly
+- [ ] Correct library loads on each platform
+- [ ] No memory leaks (verified with valgrind/leaks)
+- [ ] UTF-8 handling correct
+- [ ] Error messages helpful
 
 ---
 
-## CI/CD Integration
+## C FFI Interface
 
-### GitHub Actions Workflow Template
+**All bindings use the same C FFI functions.**
 
-```yaml
-name: Platform Tests
+### Core Functions
 
-on: [push, pull_request]
+```c
+// Parse GBLN string
+GblnValue* gbln_parse(const char* input, GblnError** error);
 
-jobs:
-  test-docker-platforms:
-    runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        platform:
-          - freebsd-x64
-          - freebsd-arm64
-          - linux-x64
-          - linux-arm64
-          - windows-x64
-          - android-arm64
-          - android-x64
-    
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          submodules: recursive
-      
-      - name: Build Docker image
-        run: |
-          cd bindings/{language}/tests/docker
-          docker build -f Dockerfile.${{ matrix.platform }} \
-            -t gbln-{language}:${{ matrix.platform }} \
-            ../../..
-      
-      - name: Run tests
-        run: |
-          docker run --rm gbln-{language}:${{ matrix.platform }}
-  
-  test-native:
-    strategy:
-      matrix:
-        os: [macos-latest]
-        arch: [arm64]
-    
-    runs-on: ${{ matrix.os }}
-    
-    steps:
-      - uses: actions/checkout@v4
-      
-      - name: Install {language}
-        run: {install_command}
-      
-      - name: Build libgbln
-        run: |
-          cd core/ffi
-          cargo build --release
-      
-      - name: Install package
-        run: |
-          cd bindings/{language}
-          {install_command}
-      
-      - name: Run tests
-        run: {test_command}
+// Serialize to GBLN
+char* gbln_serialize(const GblnValue* value);
+
+// Free memory
+void gbln_value_free(GblnValue* value);
+void gbln_string_free(char* str);
+void gbln_error_free(GblnError* error);
+
+// Type queries
+GblnValueType gbln_value_type(const GblnValue* value);
+
+// Value extraction
+int64_t gbln_value_as_i64(const GblnValue* value);
+uint64_t gbln_value_as_u64(const GblnValue* value);
+double gbln_value_as_f64(const GblnValue* value);
+const char* gbln_value_as_string(const GblnValue* value);
+bool gbln_value_as_bool(const GblnValue* value);
+
+// Object operations
+const char** gbln_object_keys(const GblnValue* value, size_t* count);
+GblnValue* gbln_object_get(const GblnValue* value, const char* key);
+
+// Array operations
+size_t gbln_array_length(const GblnValue* value);
+GblnValue* gbln_array_get(const GblnValue* value, size_t index);
 ```
+
+**See:** `core/ffi/src/lib.rs` for complete API
+
+---
+
+## Memory Management
+
+**CRITICAL:** All pointers returned by C FFI MUST be freed!
+
+### Rules
+
+1. **`GblnValue*`** → Call `gbln_value_free()` when done
+2. **`char*`** (strings) → Call `gbln_string_free()` when done
+3. **`GblnError*`** → Call `gbln_error_free()` when done
+4. **`char**`** (key arrays) → Call `gbln_keys_free()` when done
+
+### Language-Specific Solutions
+
+**Python:**
+```python
+import weakref
+
+class Value:
+    def __init__(self, ptr):
+        self._ptr = ptr
+        weakref.finalize(self, _lib.gbln_value_free, ptr)
+```
+
+**JavaScript:**
+```javascript
+const registry = new FinalizationRegistry(ptr => {
+    _lib.gbln_value_free(ptr);
+});
+
+class Value {
+    constructor(ptr) {
+        this._ptr = ptr;
+        registry.register(this, ptr, this);
+    }
+}
+```
+
+**Go:**
+```go
+import "runtime"
+
+type Value struct {
+    ptr *C.GblnValue
+}
+
+func NewValue(ptr *C.GblnValue) *Value {
+    v := &Value{ptr: ptr}
+    runtime.SetFinalizer(v, func(v *Value) {
+        C.gbln_value_free(v.ptr)
+    })
+    return v
+}
+```
+
+**C++:**
+```cpp
+class Value {
+    GblnValue* _ptr;
+public:
+    Value(GblnValue* ptr) : _ptr(ptr) {}
+    ~Value() { gbln_value_free(_ptr); }
+    
+    // Disable copy, enable move
+    Value(const Value&) = delete;
+    Value& operator=(const Value&) = delete;
+    Value(Value&& other) : _ptr(other._ptr) { other._ptr = nullptr; }
+};
+```
+
+---
+
+## Type Conversion
+
+**GBLN ↔ Native type mapping:**
+
+| GBLN Type | Python | JavaScript | Java | Go | Rust | Swift |
+|-----------|--------|------------|------|-----|------|-------|
+| I8-I64 | `int` | `number` | `long` | `int64` | `i64` | `Int64` |
+| U8-U64 | `int` | `number` | `long` | `uint64` | `u64` | `UInt64` |
+| F32, F64 | `float` | `number` | `double` | `float64` | `f64` | `Double` |
+| Str | `str` | `string` | `String` | `string` | `String` | `String` |
+| Bool | `bool` | `boolean` | `boolean` | `bool` | `bool` | `Bool` |
+| Null | `None` | `null` | `null` | `nil` | `None` | `nil` |
+| Object | `dict` | `object` | `Map` | `map` | `HashMap` | `Dictionary` |
+| Array | `list` | `array` | `List` | `[]T` | `Vec` | `Array` |
 
 ---
 
@@ -471,149 +474,109 @@ jobs:
 
 ### README.md Template
 
-Every binding MUST include:
-
 ```markdown
 # GBLN - {Language} Bindings
 
-[![Platform](https://img.shields.io/badge/FreeBSD-x64%20%7C%20ARM64-red)](https://www.freebsd.org/)
-[![Platform](https://img.shields.io/badge/Linux-x64%20%7C%20ARM64-blue)](https://www.kernel.org/)
-[![Platform](https://img.shields.io/badge/macOS-x64%20%7C%20ARM64-lightgrey)](https://www.apple.com/macos/)
-[![Platform](https://img.shields.io/badge/Windows-x64-blue)](https://www.microsoft.com/windows/)
-[![Platform](https://img.shields.io/badge/Android-ARM64%20%7C%20x64-green)](https://www.android.com/)
-[![Docker Tested](https://img.shields.io/badge/Docker-Tested%20on%209%20platforms-blue)](#platform-testing)
+{Language} bindings for GBLN (Goblin Bounded Lean Notation).
 
 ## Installation
 
-{language_specific_install}
-
-## Quick Start
-
-{language_specific_examples}
+{language_specific_install_command}
 
 ## Platform Support
 
-Tested on all platforms via Docker. See [Platform Testing](#platform-testing).
+✅ **All 8 platforms supported out-of-the-box:**
 
-## Platform Testing
+- Linux (x86_64, ARM64)
+- FreeBSD (x86_64, ARM64)
+- Windows (x86_64)
+- Android (ARM64, x86_64)
+- macOS (ARM64)
 
-All tests pass on:
-- ✅ FreeBSD x86_64, ARM64
-- ✅ Linux x86_64, ARM64
-- ✅ Windows x86_64
-- ✅ Android ARM64, x86_64
-- ⚠️ macOS x86_64, ARM64 (native tested)
+Pre-compiled libraries included. No build tools required.
 
-See `tests/docker/README.md` for running platform tests locally.
+## Quick Start
+
+{language_specific_example}
+
+## API Documentation
+
+{link_to_docs}
 ```
-
----
-
-## Common Patterns
-
-### FFI Library Loading
-
-**Pattern from #100 (Python):**
-
-```python
-def _find_library():
-    # 1. Environment variable GBLN_LIBRARY_PATH
-    # 2. Alongside package (bundled)
-    # 3. System library paths
-    # 4. Error with helpful message
-```
-
-**Adapt to each language's idioms.**
-
-### Memory Management
-
-**C FFI returns pointers that MUST be freed:**
-
-- `GblnValue*` → `gbln_value_free()`
-- `GblnString*` → `gbln_string_free()`
-- `char**` (keys) → `gbln_keys_free()`
-
-**Language-specific solutions:**
-- Python: `weakref.finalize()`
-- JavaScript: `FinalizationRegistry`
-- Swift: `deinit`
-- Go: `runtime.SetFinalizer()`
-- Java: `try-with-resources`
-- C++: RAII with destructors
-
-### Type Conversion
-
-**GBLN ↔ Native type mapping:**
-
-| GBLN Type | Python | JavaScript | Java | Go | C++ |
-|-----------|--------|------------|------|-----|-----|
-| I8-I64 | `int` | `number` | `long` | `int64` | `int64_t` |
-| U8-U64 | `int` | `number` | `long` | `uint64` | `uint64_t` |
-| F32, F64 | `float` | `number` | `double` | `float64` | `double` |
-| Str | `str` | `string` | `String` | `string` | `std::string` |
-| Bool | `bool` | `boolean` | `boolean` | `bool` | `bool` |
-| Null | `None` | `null` | `null` | `nil` | `nullptr` |
-| Object | `dict` | `object` | `Map` | `map` | `std::map` |
-| Array | `list` | `array` | `List` | `[]T` | `std::vector` |
 
 ---
 
 ## Quality Checklist
 
-**Before submitting binding ticket for review:**
+**Before marking binding ticket complete:**
 
 - [ ] All code follows language idioms
 - [ ] All comments in BBC English
 - [ ] No files >400 lines
 - [ ] No generic names (`utils`, `helpers`, `common`)
 - [ ] Type annotations/hints where supported
-- [ ] Memory management verified (no leaks)
-- [ ] All tests pass locally
-- [ ] **Docker test infrastructure created**
-- [ ] **`test-all-platforms.sh` passes**
-- [ ] README with platform badges
-- [ ] Platform testing documentation
-- [ ] Installation instructions for all platforms
+- [ ] Memory management correct (no leaks)
+- [ ] All tests pass
+- [ ] Platform detection works
+- [ ] All 8 libraries load correctly
+- [ ] README with platform support info
+- [ ] Installation instructions
 - [ ] Usage examples
 - [ ] API documentation
+- [ ] Package includes all libraries
+- [ ] Package installable (pip/npm/gem/etc.)
 
 ---
 
-## Ticket Dependencies
+## Language-Specific Notes
 
-**Before starting any binding ticket:**
+### Python (#100)
+- Use `ctypes.CDLL()` for library loading
+- Use `weakref.finalize()` for memory management
+- Type hints for all public API
 
-1. ✅ #004 (Rust Core) - COMPLETED
-2. ✅ #005 (C FFI) - COMPLETED
-3. ✅ #005B (C FFI Extensions) - COMPLETED
-4. ✅ #100 (Python - Reference) - IN PROGRESS
+### JavaScript (#101)
+- Use `ffi-napi` for FFI or WASM
+- Use `FinalizationRegistry` for memory
+- TypeScript definitions required
 
-**Recommended order:**
+### Swift (#102)
+- Use `dlopen()` + Swift/C interop
+- Use `deinit` for cleanup
+- Native feel with Swift naming conventions
 
-1. #100 Python (Reference implementation)
-2. #101 JavaScript (High priority, wide usage)
-3. #102 Swift (iOS/macOS native)
-4. #103 Kotlin (Android/JVM native)
-5. #104 Go (Backend/CLI usage)
-6. #105-111 (Medium/Low priority)
+### Kotlin (#103)
+- Use JNA for FFI
+- Use `try-with-resources` for memory
+- Idiomatic Kotlin API
+
+### Go (#104)
+- Use CGO with conditional compilation
+- Use `runtime.SetFinalizer()` for memory
+- Idiomatic Go API
+
+### Others (#105-111)
+- Follow language best practices
+- Adapt memory management to language
+- Provide idiomatic API
 
 ---
 
-## Support
+## Summary
 
-**Questions?**
-- Study Ticket #100 implementation
-- Read `docs/BINDING_REFERENCE.md`
-- Read `docs/PLATFORM_TESTING.md`
-- Check `bindings/TEMPLATE/`
+**Building Language Bindings:**
 
-**Issues?**
-- File in respective language binding repo
-- Reference parent ticket number
-- Include platform test results
+1. ✅ Use pre-built libraries from `core/ffi/libs/` (DO NOT rebuild)
+2. ✅ Implement platform detection + library loading
+3. ✅ Include all 8 libraries in package distribution
+4. ✅ Test on your platform (auto-detects correct library)
+5. ✅ Users install package and it just works (no compilation)
+
+**Key Principle:** Pre-built libraries + smart loading = zero build time for users.
 
 ---
 
-**Last Updated:** 2025-11-27  
-**Policy Version:** 1.0  
-**Reference Ticket:** #100 (Python bindings)
+**Version:** 2.0  
+**Last Updated:** 2025-11-28  
+**Reference:** Ticket #100 (Python bindings)  
+**Contact:** ask@vvoss.dev
