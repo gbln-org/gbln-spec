@@ -22,43 +22,43 @@ This repository serves as the central hub for the GBLN ecosystem. All implementa
 
 | Badge | Component | Status |
 |-------|-----------|--------|
-| | **[📋 Specification](docs/)** - The GBLN format specification (this repo) | ✅ Released |
-| [![Rust](https://img.shields.io/badge/Rust-v0.1.0-blue?logo=rust&logoColor=white)](https://github.com/gbln-org/gbln-rust) | **[Rust Core](https://github.com/gbln-org/gbln-rust)** - Reference implementation and parser library | ✅ Released |
-| [![C FFI](https://img.shields.io/badge/C%20FFI-v0.1.0-blue?logo=c&logoColor=white)](https://github.com/gbln-org/gbln-ffi) | **[C FFI](https://github.com/gbln-org/gbln-ffi)** - C interface layer for language bindings | ✅ Released |
-| [![CLI](https://img.shields.io/badge/CLI-planned-red?logo=gnubash&logoColor=white)](https://github.com/gbln-org/gbln-tools) | **[CLI Tools](https://github.com/gbln-org/gbln-tools)** - Command-line tools (fmt, validate, convert) | 📋 Planned |
+| | **[📋 Specification](docs/)** - The GBLN format specification (this repo) | ✅ v1.0 |
+| [![Rust](https://img.shields.io/badge/Rust-v0.1.0-green?logo=rust&logoColor=white)](https://github.com/gbln-org/gbln-rust) | **[Rust Core](https://github.com/gbln-org/gbln-rust)** - Reference implementation and parser library | ✅ v0.1.0 |
+| [![C FFI](https://img.shields.io/badge/C%20FFI-v0.1.0-green?logo=c&logoColor=white)](https://github.com/gbln-org/gbln-ffi) | **[C FFI](https://github.com/gbln-org/gbln-ffi)** - C interface layer for language bindings (8 platforms) | ✅ v0.1.0 |
+| <span style="filter: grayscale(100%); opacity: 0.6;">[![CLI](https://img.shields.io/badge/CLI-planned-blue?logo=gnubash&logoColor=white)](https://github.com/gbln-org/gbln-tools)</span> | **[CLI Tools](https://github.com/gbln-org/gbln-tools)** - Command-line tools (fmt, validate, convert) | 📋 Planned |
 
 ### Language Bindings
 
 | Badge | Component | Status |
 |-------|-----------|--------|
-| [![Python](https://img.shields.io/badge/Python-planned-red?logo=python&logoColor=white)](https://github.com/gbln-org/gbln-python) | **[Python](https://github.com/gbln-org/gbln-python)** - Python bindings | 📋 Planned |
-| [![JavaScript](https://img.shields.io/badge/JavaScript-planned-red?logo=javascript&logoColor=white)](https://github.com/gbln-org/gbln-javascript) | **[JavaScript/TS](https://github.com/gbln-org/gbln-javascript)** - WASM bindings | 📋 Planned |
-| [![Swift](https://img.shields.io/badge/Swift-planned-red?logo=swift&logoColor=white)](https://github.com/gbln-org/gbln-swift) | **[Swift](https://github.com/gbln-org/gbln-swift)** - iOS/macOS bindings | 📋 Planned |
-| [![Kotlin](https://img.shields.io/badge/Kotlin-planned-red?logo=kotlin&logoColor=white)](https://github.com/gbln-org/gbln-kotlin) | **[Kotlin](https://github.com/gbln-org/gbln-kotlin)** - Android/JVM bindings | 📋 Planned |
-| [![Go](https://img.shields.io/badge/Go-planned-red?logo=go&logoColor=white)](https://github.com/gbln-org/gbln-go) | **[Go](https://github.com/gbln-org/gbln-go)** - Go bindings | 📋 Planned |
-| [![Java](https://img.shields.io/badge/Java-planned-red?logo=openjdk&logoColor=white)](https://github.com/gbln-org/gbln-java) | **[Java](https://github.com/gbln-org/gbln-java)** - Java bindings | 📋 Planned |
-| [![Ruby](https://img.shields.io/badge/Ruby-planned-red?logo=ruby&logoColor=white)](https://github.com/gbln-org/gbln-ruby) | **[Ruby](https://github.com/gbln-org/gbln-ruby)** - Ruby bindings | 📋 Planned |
-| [![PHP](https://img.shields.io/badge/PHP-planned-red?logo=php&logoColor=white)](https://github.com/gbln-org/gbln-php) | **[PHP](https://github.com/gbln-org/gbln-php)** - PHP bindings | 📋 Planned |
-| [![Perl](https://img.shields.io/badge/Perl-planned-red?logo=perl&logoColor=white)](https://github.com/gbln-org/gbln-perl) | **[Perl](https://github.com/gbln-org/gbln-perl)** - Perl bindings | 📋 Planned |
-| [![Tcl](https://img.shields.io/badge/Tcl-planned-red?logo=tcl&logoColor=white)](https://github.com/gbln-org/gbln-tcl) | **[Tcl](https://github.com/gbln-org/gbln-tcl)** - Tcl bindings | 📋 Planned |
-| [![C#](https://img.shields.io/badge/C%23-planned-red?logo=csharp&logoColor=white)](https://github.com/gbln-org/gbln-csharp) | **[C#](https://github.com/gbln-org/gbln-csharp)** - .NET bindings | 📋 Planned |
-| [![C++](https://img.shields.io/badge/C++-planned-red?logo=cplusplus&logoColor=white)](https://github.com/gbln-org/gbln-cpp) | **[C++](https://github.com/gbln-org/gbln-cpp)** - C++ bindings | 📋 Planned |
+| [![Python](https://img.shields.io/badge/Python-v0.1.0-green?logo=python&logoColor=white)](https://github.com/gbln-org/gbln-python) | **[Python](https://github.com/gbln-org/gbln-python)** - Python bindings (FS-enabled, XZ) | ✅ v0.1.0 |
+| [![JavaScript](https://img.shields.io/badge/JavaScript-v0.1.0-green?logo=javascript&logoColor=white)](https://github.com/gbln-org/gbln-javascript) | **[JavaScript/TS](https://github.com/gbln-org/gbln-javascript)** - WASM bindings (FS-disabled) | ✅ v0.1.0 |
+| [![Kotlin](https://img.shields.io/badge/Kotlin-v0.1.0-green?logo=kotlin&logoColor=white)](https://github.com/gbln-org/gbln-kotlin) | **[Kotlin](https://github.com/gbln-org/gbln-kotlin)** - Android/JVM bindings (FS-enabled, XZ) | ✅ v0.1.0 |
+| [![Go](https://img.shields.io/badge/Go-v0.1.0-green?logo=go&logoColor=white)](https://github.com/gbln-org/gbln-go) | **[Go](https://github.com/gbln-org/gbln-go)** - Go bindings (FS-enabled, XZ, bidirectional) | ✅ v0.1.0 |
+| <span style="filter: grayscale(100%); opacity: 0.6;">[![Swift](https://img.shields.io/badge/Swift-planned-blue?logo=swift&logoColor=white)](https://github.com/gbln-org/gbln-swift)</span> | **[Swift](https://github.com/gbln-org/gbln-swift)** - iOS/macOS bindings | 📋 Planned |
+| <span style="filter: grayscale(100%); opacity: 0.6;">[![Java](https://img.shields.io/badge/Java-planned-blue?logo=openjdk&logoColor=white)](https://github.com/gbln-org/gbln-java)</span> | **[Java](https://github.com/gbln-org/gbln-java)** - Java bindings | 📋 Planned |
+| <span style="filter: grayscale(100%); opacity: 0.6;">[![C#](https://img.shields.io/badge/C%23-planned-blue?logo=csharp&logoColor=white)](https://github.com/gbln-org/gbln-csharp)</span> | **[C#](https://github.com/gbln-org/gbln-csharp)** - .NET bindings | 📋 Planned |
+| <span style="filter: grayscale(100%); opacity: 0.6;">[![C++](https://img.shields.io/badge/C++-planned-blue?logo=cplusplus&logoColor=white)](https://github.com/gbln-org/gbln-cpp)</span> | **[C++](https://github.com/gbln-org/gbln-cpp)** - C++ bindings | 📋 Planned |
+| <span style="filter: grayscale(100%); opacity: 0.6;">[![Ruby](https://img.shields.io/badge/Ruby-planned-blue?logo=ruby&logoColor=white)](https://github.com/gbln-org/gbln-ruby)</span> | **[Ruby](https://github.com/gbln-org/gbln-ruby)** - Ruby bindings | 📋 Planned |
+| <span style="filter: grayscale(100%); opacity: 0.6;">[![PHP](https://img.shields.io/badge/PHP-planned-blue?logo=php&logoColor=white)](https://github.com/gbln-org/gbln-php)</span> | **[PHP](https://github.com/gbln-org/gbln-php)** - PHP bindings | 📋 Planned |
+| <span style="filter: grayscale(100%); opacity: 0.6;">[![Perl](https://img.shields.io/badge/Perl-planned-blue?logo=perl&logoColor=white)](https://github.com/gbln-org/gbln-perl)</span> | **[Perl](https://github.com/gbln-org/gbln-perl)** - Perl bindings | 📋 Planned |
+| <span style="filter: grayscale(100%); opacity: 0.6;">[![Tcl](https://img.shields.io/badge/Tcl-planned-blue?logo=tcl&logoColor=white)](https://github.com/gbln-org/gbln-tcl)</span> | **[Tcl](https://github.com/gbln-org/gbln-tcl)** - Tcl bindings | 📋 Planned |
 
 ### Editor Support
 
 | Badge | Component | Status |
 |-------|-----------|--------|
-| [![VSCode](https://img.shields.io/badge/VSCode-planned-red?logo=visualstudiocode&logoColor=white)](https://github.com/gbln-org/gbln-vscode) | **[VSCode](https://github.com/gbln-org/gbln-vscode)** - VS Code extension | 📋 Planned |
-| [![Vim](https://img.shields.io/badge/Vim-planned-red?logo=vim&logoColor=white)](https://github.com/gbln-org/gbln-vim) | **[Vim](https://github.com/gbln-org/gbln-vim)** - Vim/Neovim plugin | 📋 Planned |
-| [![JetBrains](https://img.shields.io/badge/JetBrains-planned-red?logo=jetbrains&logoColor=white)](https://github.com/gbln-org/gbln-jetbrains) | **[JetBrains](https://github.com/gbln-org/gbln-jetbrains)** - IntelliJ, PyCharm, etc. | 📋 Planned |
-| [![Sublime](https://img.shields.io/badge/Sublime-planned-red?logo=sublimetext&logoColor=white)](https://github.com/gbln-org/gbln-sublime) | **[Sublime](https://github.com/gbln-org/gbln-sublime)** - Sublime Text plugin | 📋 Planned |
-| [![Zed](https://img.shields.io/badge/Zed-planned-red?logo=zedindustries&logoColor=white)](https://github.com/gbln-org/gbln-zed) | **[Zed](https://github.com/gbln-org/gbln-zed)** - Zed editor extension | 📋 Planned |
+| <span style="filter: grayscale(100%); opacity: 0.6;">[![VSCode](https://img.shields.io/badge/VSCode-planned-blue?logo=visualstudiocode&logoColor=white)](https://github.com/gbln-org/gbln-vscode)</span> | **[VSCode](https://github.com/gbln-org/gbln-vscode)** - VS Code extension | 📋 Planned |
+| <span style="filter: grayscale(100%); opacity: 0.6;">[![Vim](https://img.shields.io/badge/Vim-planned-blue?logo=vim&logoColor=white)](https://github.com/gbln-org/gbln-vim)</span> | **[Vim](https://github.com/gbln-org/gbln-vim)** - Vim/Neovim plugin | 📋 Planned |
+| <span style="filter: grayscale(100%); opacity: 0.6;">[![JetBrains](https://img.shields.io/badge/JetBrains-planned-blue?logo=jetbrains&logoColor=white)](https://github.com/gbln-org/gbln-jetbrains)</span> | **[JetBrains](https://github.com/gbln-org/gbln-jetbrains)** - IntelliJ, PyCharm, etc. | 📋 Planned |
+| <span style="filter: grayscale(100%); opacity: 0.6;">[![Sublime](https://img.shields.io/badge/Sublime-planned-blue?logo=sublimetext&logoColor=white)](https://github.com/gbln-org/gbln-sublime)</span> | **[Sublime](https://github.com/gbln-org/gbln-sublime)** - Sublime Text plugin | 📋 Planned |
+| <span style="filter: grayscale(100%); opacity: 0.6;">[![Zed](https://img.shields.io/badge/Zed-planned-blue?logo=zedindustries&logoColor=white)](https://github.com/gbln-org/gbln-zed)</span> | **[Zed](https://github.com/gbln-org/gbln-zed)** - Zed editor extension | 📋 Planned |
 
 ### Website
 
 | Badge | Component | Status |
 |-------|-----------|--------|
-| [![Website](https://img.shields.io/badge/gbln.dev-planned-red?logo=html5&logoColor=white)](https://github.com/gbln-org/gbln-website) | **[gbln.dev](https://github.com/gbln-org/gbln-website)** - Official website & playground | 📋 Planned |
+| <span style="filter: grayscale(100%); opacity: 0.6;">[![Website](https://img.shields.io/badge/gbln.dev-planned-blue?logo=html5&logoColor=white)](https://github.com/gbln-org/gbln-website)</span> | **[gbln.dev](https://github.com/gbln-org/gbln-website)** - Official website & playground | 📋 Planned |
 
 ### Getting Started
 
