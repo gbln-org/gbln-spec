@@ -125,18 +125,21 @@ Host: macOS/Linux with Docker + rustup + cross
 
 ## Platform Matrix
 
+**All 8 platforms are MANDATORY for all language bindings.**
+
 | Platform | Target Triple | Method | Library | Size | Status |
 |----------|--------------|--------|---------|------|--------|
-| Linux x86_64 | `x86_64-unknown-linux-gnu` | cross | libgbln.so | 573K | ✅ |
-| Linux ARM64 | `aarch64-unknown-linux-gnu` | cross | libgbln.so | 583K | ✅ |
-| FreeBSD x86_64 | `x86_64-unknown-freebsd` | cross | libgbln.so | 548K | ✅ |
-| FreeBSD ARM64 | `aarch64-unknown-freebsd` | cross +nightly | libgbln.so | 639K | ✅ |
-| Windows x86_64 | `x86_64-pc-windows-gnu` | cross | gbln.dll | 1.5M | ✅ |
-| Android ARM64 | `aarch64-linux-android` | cross | libgbln.so | 627K | ✅ |
-| Android x86_64 | `x86_64-linux-android` | cross | libgbln.so | 617K | ✅ |
-| macOS ARM64 | `aarch64-apple-darwin` | native | libgbln.dylib | 553K | ✅ |
+| Linux x86_64 | `x86_64-unknown-linux-gnu` | cross | libgbln.so | 573K | ✅ Mandatory |
+| Linux ARM64 | `aarch64-unknown-linux-gnu` | cross | libgbln.so | 583K | ✅ Mandatory |
+| FreeBSD x86_64 | `x86_64-unknown-freebsd` | cross | libgbln.so | 548K | ✅ Mandatory |
+| FreeBSD ARM64 | `aarch64-unknown-freebsd` | cross +nightly | libgbln.so | 639K | ✅ Mandatory |
+| Windows x86_64 | `x86_64-pc-windows-gnu` | cross | gbln.dll | 1.5M | ✅ Mandatory |
+| Android ARM64 | `aarch64-linux-android` | cross | libgbln.so | 627K | ✅ Mandatory |
+| Android x86_64 | `x86_64-linux-android` | cross | libgbln.so | 617K | ✅ Mandatory |
+| macOS ARM64 | `aarch64-apple-darwin` | native | libgbln.dylib | 553K | ✅ Mandatory |
 
-**All builds verified:** 2025-11-28
+**All builds verified:** 2025-11-28  
+**Quality Standards:** See `BINDING_BUILDS_QS_NOTES.md` for binding implementation requirements
 
 ---
 
@@ -520,8 +523,16 @@ jobs:
 
 ---
 
-**Version:** 4.0  
-**Last Updated:** 2025-11-28  
+## Related Documentation
+
+- **`BINDING_BUILDS.md`** - How to use these libraries in language bindings
+- **`BINDING_BUILDS_QS_NOTES.md`** - Quality standards for binding implementations
+- **`.claude/tickets/100-gbln-bindings-python-STATUS.md`** - Reference implementation (Python)
+
+---
+
+**Version:** 4.1  
+**Last Updated:** 2025-12-01  
 **Verified:** All 8 platforms built successfully  
 **Maintained by:** GBLN Project  
 **Contact:** ask@vvoss.dev

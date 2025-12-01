@@ -1,7 +1,7 @@
 # GBLN Language Bindings - Build & Test Guide
 
-**Version:** 2.0  
-**Last Updated:** 2025-11-28  
+**Version:** 3.0  
+**Last Updated:** 2025-12-01  
 **Status:** Production - VERIFIED & TESTED
 
 ---
@@ -16,9 +16,45 @@ Rust Core → C FFI (cross builds) → Pre-built libs (Git) → Language Binding
 
 **All bindings share:**
 - Same C FFI libraries from `core/ffi/libs/` (committed to Git)
-- Same platform support (8 platforms)
+- Same platform support (8 platforms - ALL MANDATORY)
 - Same quality requirements (tested on all platforms)
 - Same documentation patterns
+
+---
+
+## ⚠️ NEW: Binding Categories (2025-12-01)
+
+**CRITICAL: There are TWO distinct categories of language bindings:**
+
+### Category 1: FS-Enabled Bindings (Full Feature Set)
+
+**Languages:** Python, Swift, Kotlin, Go, Java, C#, C++, Ruby, PHP, Perl, Tcl
+
+**Feature Set:**
+- ✅ Parser (parse strings AND files)
+- ✅ Serialiser (toString, toStringPretty)
+- ✅ **IO Module (readFile, writeFile)** - MANDATORY
+- ✅ Value conversion
+- ✅ Config module
+- ✅ Error types
+
+**Use Case:** Native applications, servers, CLI tools, desktop apps
+
+### Category 2: FS-Disabled Bindings (Limited Feature Set)
+
+**Languages:** JavaScript (browser), TypeScript (browser), any WASM-only binding
+
+**Feature Set:**
+- ✅ Parser (parse strings ONLY)
+- ✅ Serialiser (toString, toStringPretty)
+- ✅ Value conversion
+- ✅ Error types
+- ❌ **NO IO Module** (browser security prevents filesystem access)
+- ⚠️ Config module optional (only if needed)
+
+**Use Case:** Browser applications, WASM environments without filesystem
+
+**Quality Standards:** See `BINDING_BUILDS_QS_NOTES.md` for detailed requirements per category
 
 ---
 
@@ -72,18 +108,20 @@ core/ffi/libs/
 
 ## Platform Matrix
 
-**Every binding MUST support all 8 platforms.**
+**Every binding MUST support all 8 platforms - ALL MANDATORY.**
 
-| Platform | Architecture | Library | Size | Status |
-|----------|-------------|---------|------|--------|
-| Linux | x86_64 | libgbln.so | 573K | ✅ |
-| Linux | ARM64 | libgbln.so | 583K | ✅ |
-| FreeBSD | x86_64 | libgbln.so | 548K | ✅ |
-| FreeBSD | ARM64 | libgbln.so | 639K | ✅ |
-| Windows | x86_64 | gbln.dll | 1.5M | ✅ |
-| Android | ARM64 | libgbln.so | 627K | ✅ |
-| Android | x86_64 | libgbln.so | 617K | ✅ |
-| macOS | ARM64 | libgbln.dylib | 553K | ✅ |
+| Platform | Architecture | Library | Size | Support Level |
+|----------|-------------|---------|------|---------------|
+| Linux | x86_64 | libgbln.so | 573K | ✅ Mandatory |
+| Linux | ARM64 | libgbln.so | 583K | ✅ Mandatory |
+| FreeBSD | x86_64 | libgbln.so | 548K | ✅ Mandatory |
+| FreeBSD | ARM64 | libgbln.so | 639K | ✅ Mandatory |
+| Windows | x86_64 | gbln.dll | 1.5M | ✅ Mandatory |
+| Android | ARM64 | libgbln.so | 627K | ✅ Mandatory |
+| Android | x86_64 | libgbln.so | 617K | ✅ Mandatory |
+| macOS | ARM64 | libgbln.dylib | 553K | ✅ Mandatory |
+
+**Note:** FS-disabled bindings (JavaScript/WASM) still must handle all 8 platforms for Node.js compatibility
 
 ---
 
@@ -655,10 +693,51 @@ python3 -m pip show gbln
 - Use `deinit` for cleanup
 - Native feel with Swift naming conventions
 
-### Kotlin (#103)
-- Use JNA for FFI
-- Use `try-with-resources` for memory
-- Idiomatic Kotlin API
+### Kotlin (#103) - VERIFIED & TESTED (FS-Enabled)
+
+**Status:** ✅ Core Complete, ⚠️ Missing modules (2025-12-01)
+
+**Key Implementation Details:**
+
+1. **FFI Method:** Use JNA (Java Native Access), NOT JNI
+   ```kotlin
+   import com.sun.jna.Library
+   import com.sun.jna.Native
+   
+   interface GblnLibrary : Library {
+       fun gbln_parse(input: String, outValue: PointerByReference): Int
+       // ... all C FFI functions
+   }
+   ```
+
+2. **Memory Management:**
+   ```kotlin
+   class ManagedGblnValue(val ptr: Pointer) {
+       init {
+           cleaner.register(this, CleanupAction(ptr))
+       }
+       private class CleanupAction(private val ptr: Pointer) : Runnable {
+           override fun run() {
+               lib.gblnValueFree(ptr)
+           }
+       }
+   }
+   ```
+
+3. **Build System:** Gradle with JNA dependency
+   ```kotlin
+   dependencies {
+       implementation("net.java.dev.jna:jna:5.14.0")
+   }
+   ```
+
+**Missing Modules (see BINDING_BUILDS_QS_NOTES.md):**
+- ❌ io.kt (CRITICAL - mandatory for FS-enabled)
+- ❌ Config.kt
+- ❌ Error.kt
+- ⚠️ Incomplete test coverage
+
+**Reference:** Python bindings for structure, adapt to Kotlin idioms
 
 ### Go (#104)
 - Use CGO with conditional compilation
@@ -676,17 +755,31 @@ python3 -m pip show gbln
 
 **Building Language Bindings:**
 
-1. ✅ Use pre-built libraries from `core/ffi/libs/` (DO NOT rebuild)
-2. ✅ Implement platform detection + library loading
-3. ✅ Include all 8 libraries in package distribution
-4. ✅ Test on your platform (auto-detects correct library)
-5. ✅ Users install package and it just works (no compilation)
+1. ✅ **Determine category** - FS-enabled (full) or FS-disabled (browser)
+2. ✅ Use pre-built libraries from `core/ffi/libs/` (DO NOT rebuild)
+3. ✅ Implement platform detection + library loading
+4. ✅ Include all 8 libraries in package distribution
+5. ✅ Implement ALL mandatory modules per category
+6. ✅ Test on your platform (auto-detects correct library)
+7. ✅ Users install package and it just works (no compilation)
 
 **Key Principle:** Pre-built libraries + smart loading = zero build time for users.
 
+**Quality Assurance:** Follow `BINDING_BUILDS_QS_NOTES.md` for complete requirements.
+
 ---
 
-**Version:** 2.0  
-**Last Updated:** 2025-11-28  
-**Reference:** Ticket #100 (Python bindings)  
+## Related Documentation
+
+- **`BUILD_SYSTEM.md`** - How C FFI libraries are built
+- **`BINDING_BUILDS_QS_NOTES.md`** - Quality standards and checklists per category
+- **`.claude/tickets/100-gbln-bindings-python-STATUS.md`** - Reference implementation (FS-enabled)
+- **`.claude/tickets/101-gbln-bindings-javascript.md`** - Reference implementation (FS-disabled)
+- **`.claude/tickets/103-gbln-bindings-kotlin.md`** - Current work (FS-enabled, incomplete)
+
+---
+
+**Version:** 3.0  
+**Last Updated:** 2025-12-01  
+**Reference:** Ticket #100 (Python - FS-enabled), Ticket #101 (JavaScript - FS-disabled)  
 **Contact:** ask@vvoss.dev

@@ -41,7 +41,7 @@
 
 [submodule "bindings/go"]
 	path = bindings/go
-	url = https://github.com/gbln-org/gbln-go.git
+	url = git@github.com:gbln-org/gbln-go.git
 	branch = main
 
 [submodule "bindings/java"]
