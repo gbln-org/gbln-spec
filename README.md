@@ -6,8 +6,8 @@
 
 **The first type-safe LLM-native data format: Deterministic, Token-Efficient, Memory-Bounded**
 
-[![Status](https://img.shields.io/badge/status-specification-blue)](docs/01-specification.md)
-[![Version](https://img.shields.io/badge/version-1.0-green)](docs/00-introduction.md)
+[![Specification](https://img.shields.io/badge/specification-v1.0-green)](docs/01-specification.md)
+[![Ecosystem](https://img.shields.io/badge/ecosystem-active%20development-blue)](docs/)
 [![License](https://img.shields.io/badge/license-Apache%202.0-blue)](LICENSE)
 
 </div>
