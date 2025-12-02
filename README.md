@@ -23,18 +23,18 @@ This repository serves as the central hub for the GBLN ecosystem. All implementa
 | Badge | Component | Status |
 |-------|-----------|--------|
 | | **[📋 Specification](docs/)** - The GBLN format specification (this repo) | ✅ v1.0 |
-| [![Rust](https://img.shields.io/badge/Rust-v0.1.0-green?logo=rust&logoColor=white)](https://github.com/gbln-org/gbln-rust) | **[Rust Core](https://github.com/gbln-org/gbln-rust)** - Reference implementation and parser library | ✅ v0.1.0 |
-| [![C FFI](https://img.shields.io/badge/C%20FFI-v0.1.0-green?logo=c&logoColor=white)](https://github.com/gbln-org/gbln-ffi) | **[C FFI](https://github.com/gbln-org/gbln-ffi)** - C interface layer for language bindings (8 platforms) | ✅ v0.1.0 |
+| [![Rust](https://img.shields.io/badge/Rust-v0.9.0-green?logo=rust&logoColor=white)](https://github.com/gbln-org/gbln-rust) | **[Rust Core](https://github.com/gbln-org/gbln-rust)** - Reference implementation and parser library | ✅ v0.9.0 |
+| [![C FFI](https://img.shields.io/badge/C%20FFI-v0.9.0-green?logo=c&logoColor=white)](https://github.com/gbln-org/gbln-ffi) | **[C FFI](https://github.com/gbln-org/gbln-ffi)** - C interface layer for language bindings (8 platforms) | ✅ v0.9.0 |
 | <span style="filter: grayscale(100%); opacity: 0.6;">[![CLI](https://img.shields.io/badge/CLI-planned-blue?logo=gnubash&logoColor=white)](https://github.com/gbln-org/gbln-tools)</span> | **[CLI Tools](https://github.com/gbln-org/gbln-tools)** - Command-line tools (fmt, validate, convert) | 📋 Planned |
 
 ### Language Bindings
 
 | Badge | Component | Status |
 |-------|-----------|--------|
-| [![Python](https://img.shields.io/badge/Python-v0.1.0-green?logo=python&logoColor=white)](https://github.com/gbln-org/gbln-python) | **[Python](https://github.com/gbln-org/gbln-python)** - Python bindings (FS-enabled, XZ) | ✅ v0.1.0 |
-| [![JavaScript](https://img.shields.io/badge/JavaScript-v0.1.0-green?logo=javascript&logoColor=white)](https://github.com/gbln-org/gbln-javascript) | **[JavaScript/TS](https://github.com/gbln-org/gbln-javascript)** - WASM bindings (FS-disabled) | ✅ v0.1.0 |
-| [![Kotlin](https://img.shields.io/badge/Kotlin-v0.1.0-green?logo=kotlin&logoColor=white)](https://github.com/gbln-org/gbln-kotlin) | **[Kotlin](https://github.com/gbln-org/gbln-kotlin)** - Android/JVM bindings (FS-enabled, XZ) | ✅ v0.1.0 |
-| [![Go](https://img.shields.io/badge/Go-v0.1.0-green?logo=go&logoColor=white)](https://github.com/gbln-org/gbln-go) | **[Go](https://github.com/gbln-org/gbln-go)** - Go bindings (FS-enabled, XZ, bidirectional) | ✅ v0.1.0 |
+| [![Python](https://img.shields.io/badge/Python-v0.9.0-green?logo=python&logoColor=white)](https://github.com/gbln-org/gbln-python) | **[Python](https://github.com/gbln-org/gbln-python)** - Python bindings (FS-enabled, XZ) | ✅ v0.9.0 |
+| [![JavaScript](https://img.shields.io/badge/JavaScript-v0.9.0-green?logo=javascript&logoColor=white)](https://github.com/gbln-org/gbln-javascript) | **[JavaScript/TS](https://github.com/gbln-org/gbln-javascript)** - WASM bindings (FS-disabled) | ✅ v0.9.0 |
+| [![Kotlin](https://img.shields.io/badge/Kotlin-v0.9.0-green?logo=kotlin&logoColor=white)](https://github.com/gbln-org/gbln-kotlin) | **[Kotlin](https://github.com/gbln-org/gbln-kotlin)** - Android/JVM bindings (FS-enabled, XZ) | ✅ v0.9.0 |
+| [![Go](https://img.shields.io/badge/Go-v0.9.0-green?logo=go&logoColor=white)](https://github.com/gbln-org/gbln-go) | **[Go](https://github.com/gbln-org/gbln-go)** - Go bindings (FS-enabled, XZ, bidirectional) | ✅ v0.9.0 |
 | <span style="filter: grayscale(100%); opacity: 0.6;">[![Swift](https://img.shields.io/badge/Swift-planned-blue?logo=swift&logoColor=white)](https://github.com/gbln-org/gbln-swift)</span> | **[Swift](https://github.com/gbln-org/gbln-swift)** - iOS/macOS bindings | 📋 Planned |
 | <span style="filter: grayscale(100%); opacity: 0.6;">[![Java](https://img.shields.io/badge/Java-planned-blue?logo=openjdk&logoColor=white)](https://github.com/gbln-org/gbln-java)</span> | **[Java](https://github.com/gbln-org/gbln-java)** - Java bindings | 📋 Planned |
 | <span style="filter: grayscale(100%); opacity: 0.6;">[![C#](https://img.shields.io/badge/C%23-planned-blue?logo=csharp&logoColor=white)](https://github.com/gbln-org/gbln-csharp)</span> | **[C#](https://github.com/gbln-org/gbln-csharp)** - .NET bindings | 📋 Planned |
