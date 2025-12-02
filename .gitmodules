@@ -46,7 +46,7 @@
 
 [submodule "bindings/java"]
 	path = bindings/java
-	url = https://github.com/gbln-org/gbln-java.git
+	url = git@github.com:gbln-org/gbln-java.git
 	branch = main
 
 [submodule "bindings/csharp"]
