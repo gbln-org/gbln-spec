@@ -371,16 +371,29 @@ cat docs/02-examples.md
 cat docs/04-llm-optimisation.md
 ```
 
-### (Coming Soon) Install Parser
+### Install Parser (v0.9.0 Beta)
 ```bash
 # Rust
 cargo add gbln
 
-# Python
-pip install gbln
+# Python (coming soon to PyPI)
+# Currently: clone and build from source
+git clone https://github.com/gbln-org/gbln-python.git
 
-# JavaScript
-npm install gbln
+# JavaScript (coming soon to npm)
+# Currently: clone and build from source
+git clone https://github.com/gbln-org/gbln-javascript.git
+
+# Go
+go get github.com/gbln-org/gbln-go@v0.9.0
+
+# Kotlin (coming soon to Maven Central)
+# Currently: clone and build from source
+git clone https://github.com/gbln-org/gbln-kotlin.git
+
+# Swift (Swift Package Manager)
+# Add to Package.swift dependencies:
+.package(url: "https://github.com/gbln-org/gbln-swift.git", from: "0.9.0")
 ```
 
 ---
@@ -395,7 +408,7 @@ GBLN is open-source and welcomes contributions:
 - **Editor Support**: Create plugins for your editor
 - **Documentation**: Improve guides and examples
 
-**See:** [CONTRIBUTING.md](CONTRIBUTING.md) *(coming soon)*
+Open an issue or pull request in any of our [repositories](https://github.com/gbln-org) to get started!
 
 ---
 
@@ -412,7 +425,7 @@ This project is licensed under the Apache License 2.0 - see the [LICENSE](LICENS
 **Project Lead**: Vivian Voss  
 **Email**: ask+gbln@vvoss.dev  
 **Website**: gbln.dev *(coming soon)*  
-**GitHub**: github.com/gbln *(coming soon)*
+**GitHub**: [github.com/gbln-org](https://github.com/gbln-org)
 
 ---
 
@@ -420,7 +433,7 @@ This project is licensed under the Apache License 2.0 - see the [LICENSE](LICENS
 
 > **"We built GBLN because existing formats weren't designed for the AI era. JSON wastes tokens, YAML is ambiguous, and Protocol Buffers require schemas. GBLN gives you type safety, token efficiency, and deterministic parsing in one elegant format."**
 
-**Three rules. Zero ambiguity. 84% fewer tokens.**
+**Three rules. Zero ambiguity. 86% fewer tokens.**
 
 ---
 
